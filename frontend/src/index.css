@@ -2721,22 +2721,31 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   .narrow{max-width:640px;margin:0 auto}
   .tiles{grid-template-columns:repeat(4,1fr)}
   .cols .tiles,.center .tiles{grid-template-columns:1fr 1fr}   /* a 300px dialog has no room for four */
-  #tabbar{
-    left:50%;right:auto;bottom:16px;transform:translateX(-50%);width:520px;
+  /* Centre the floating bars with width + margin-inline:auto, not left:50% +
+     translateX(-50%). Dayon's light-theme #tabbar sets inset-inline 12px with
+     higher specificity and is imported after this file, so left/right never
+     won; the 520px bar kept the -50% shift and sat clipped in the bottom-left
+     corner ("Começar" cut to "meçar"). Reset the logical insets here too, and
+     include the light-theme selector. Same left/inset mix on #timer and .sheet. */
+  #tabbar,
+  :root[data-theme="light"] #tabbar{
+    inset-inline-start:0;inset-inline-end:0;left:0;right:0;
+    width:min(520px,calc(100% - 32px));margin-inline:auto;transform:none;
+    bottom:max(16px,calc(8px + var(--sab)));
     border:var(--hair) solid var(--sep-op);border-radius:var(--r-xl);
     padding:7px 10px 9px;box-shadow:0 12px 40px -10px rgba(0,0,0,.5);
   }
   #tabbar button.start{margin-top:-26px}
-  .sheet{left:50%;right:auto;margin-left:-320px;width:640px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .sheet{inset-inline-start:0;inset-inline-end:0;left:0;right:0;width:min(640px,100%);margin-inline:auto;margin-left:auto;border-radius:var(--r-xl) var(--r-xl) 0 0}
   .center{width:340px}
   .center.wide{width:440px}
-  #timer{left:50%;right:auto;margin-left:-260px;width:520px;bottom:112px}
+  #timer{inset-inline-start:0;inset-inline-end:0;left:0;right:0;width:min(520px,calc(100% - 32px));margin-inline:auto;margin-left:auto;bottom:112px}
   /* Back to top: at the end of the wide column, level with the floating tab bar and clear of it,
      so the page's own 128px at the bottom already keeps the last row out from under it. */
   #totop,body.resting #totop{inset-inline-end:max(16px,calc(50vw - 540px + var(--pad)));bottom:calc(20px + var(--sab))}
   body.totop-on #app{padding-bottom:calc(128px + var(--sab))}
   body.totop-on.resting #app{padding-bottom:calc(220px + var(--sab))}
-  body.no-tabbar #timer{left:50%;right:auto;bottom:16px;border-radius:var(--r-xl);padding-bottom:10px;box-shadow:0 12px 40px -10px rgba(0,0,0,.5)}
+  body.no-tabbar #timer{inset-inline-start:0;inset-inline-end:0;left:0;right:0;width:min(520px,calc(100% - 32px));margin-inline:auto;margin-left:auto;bottom:max(16px,calc(8px + var(--sab)));border-radius:var(--r-xl);padding-bottom:10px;box-shadow:0 12px 40px -10px rgba(0,0,0,.5)}
   .exmedia img,.exmedia video{height:380px}
   .hm-wrap{display:flex;flex-direction:column;align-items:center}
 }

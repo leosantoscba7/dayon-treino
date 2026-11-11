@@ -52,11 +52,18 @@
 :root[data-theme="light"] .chip{border-radius:999px}
 :root[data-theme="light"][data-accent="lime"] .chip.on{background:var(--dayon-grad);color:#fff}
 
-/* the tab bar: a floating white bar, the active tab a green pill */
+/* the tab bar: a floating white bar, the active tab a green pill.
+   Side insets stay in the phone-width query: at ≥1000px they outranked the
+   desktop centering in index.css (this file loads after it) and pinned the
+   bar to the left. Colour, radius and shadow still apply at every width. */
 :root[data-theme="light"] #tabbar{
-  inset-inline-start:12px;inset-inline-end:12px;bottom:calc(8px + var(--sab));
   padding:6px 6px;border-radius:30px;border-top:0;
   background:rgba(255,255,255,.97);box-shadow:0 10px 30px -10px rgba(16,40,8,.28),0 1px 3px rgba(0,0,0,.06);
+}
+@media (max-width:999px){
+  :root[data-theme="light"] #tabbar{
+    inset-inline-start:12px;inset-inline-end:12px;bottom:calc(8px + var(--sab));
+  }
 }
 :root[data-theme="light"] #tabbar button:not(.start){border-radius:22px;padding-block:6px 5px}
 :root[data-theme="light"][data-accent="lime"] #tabbar button.on:not(.start){
