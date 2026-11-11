@@ -1,0 +1,4 @@
+/* Dayon Treino on the Apple Watch, pl: Info.plist. Written by ios/ci/watch-strings.mjs. */
+
+"NSHealthShareUsageDescription" = "Dayon Treino pokazuje tętno podczas treningu i przy każdej serii.";
+"NSHealthUpdateUsageDescription" = "Dayon Treino zapisuje treningi w Apple Zdrowie, jeśli to włączysz.";

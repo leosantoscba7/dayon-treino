@@ -1,0 +1,81 @@
+/* DAYON - Treino: the Dayon look over openGym's design system (design-ref/ref-inicio.png and
+   ref-calorias.png). White page, white cards with large radii and a soft shadow, the lime to leaf
+   green gradient on the primary button, the active tab, the start button, chips and today in the
+   week strip. Applies to the light theme, which is the default for a fresh copy; the dark theme
+   stays as openGym drew it, as an option in Settings. */
+:root{
+  --dayon-lima:#a8ef3d;
+  --dayon-folha:#30a323;
+  --dayon-grad:linear-gradient(135deg,var(--dayon-lima) 0%,#5fcf2e 55%,var(--dayon-folha) 100%);
+  --dayon-shadow:0 1px 2px rgba(16,24,8,.05),0 8px 24px -12px rgba(16,40,8,.20);
+  --dayon-glow:0 8px 20px -8px rgba(48,163,35,.55);
+}
+
+/* the wordmark (components/DayonLogo.jsx) */
+.dayon-logo{display:inline-flex;align-items:center;gap:.1em;line-height:1;user-select:none;-webkit-user-select:none}
+.dayon-logo .dl-day{font-family:"Times New Roman",Times,Charter,Georgia,serif;font-style:italic;font-weight:700;letter-spacing:-.02em;color:#121214;font-size:1em}
+.dayon-logo .dl-on{display:inline-flex;align-items:center;gap:.02em;height:.86em;padding:0 .3em 0 .22em;border-radius:999px;
+  background:var(--dayon-grad);color:#fff;box-shadow:0 .08em .2em -.06em rgba(30,90,10,.45)}
+.dayon-logo .dl-o{width:.6em;height:.6em}
+.dayon-logo .dl-on span{font-family:"Times New Roman",Times,Charter,Georgia,serif;font-style:italic;font-weight:700;font-size:.74em;line-height:1}
+:root:not([data-theme="light"]) .dayon-logo .dl-day{color:#fff}
+.dayon-home-logo{display:flex;justify-content:center;margin:6px 0 2px}
+
+:root[data-theme="light"]{
+  --bg:#ffffff;
+  --bg-el:#ffffff;
+  --surface:#ffffff;
+  --surface-2:#f2f3f1;
+  --surface-3:#e6e8e4;
+  --label:#141414;
+  --label-2:rgba(60,64,58,.72);
+  --r-card:22px;
+  --r:16px;
+}
+/* Green accent as in the references (the "Green" preset, retuned on white). */
+:root[data-theme="light"][data-accent="lime"]{
+  --acc:#3fb52a; --acc-2:#2a8f1c; --acc-ink:#23801a; --on-acc:#ffffff;
+}
+
+/* cards: white, very round, a soft shadow instead of the grey page under them */
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .sect-b,
+:root[data-theme="light"] .item{box-shadow:var(--dayon-shadow);border:1px solid rgba(20,30,10,.04)}
+
+/* primary buttons ("Iniciar treino"): the gradient pill */
+:root[data-theme="light"][data-accent="lime"] .btn.primary{
+  background:var(--dayon-grad);color:#fff;border-radius:999px;box-shadow:var(--dayon-glow);
+}
+:root[data-theme="light"][data-accent="lime"] .btn.primary:active{filter:brightness(.95)}
+
+/* chips */
+:root[data-theme="light"] .chip{border-radius:999px}
+:root[data-theme="light"][data-accent="lime"] .chip.on{background:var(--dayon-grad);color:#fff}
+
+/* the tab bar: a floating white bar, the active tab a green pill */
+:root[data-theme="light"] #tabbar{
+  inset-inline-start:12px;inset-inline-end:12px;bottom:calc(8px + var(--sab));
+  padding:6px 6px;border-radius:30px;border-top:0;
+  background:rgba(255,255,255,.97);box-shadow:0 10px 30px -10px rgba(16,40,8,.28),0 1px 3px rgba(0,0,0,.06);
+}
+:root[data-theme="light"] #tabbar button:not(.start){border-radius:22px;padding-block:6px 5px}
+:root[data-theme="light"][data-accent="lime"] #tabbar button.on:not(.start){
+  background:var(--dayon-grad);color:#fff;box-shadow:var(--dayon-glow);
+}
+:root[data-theme="light"][data-accent="lime"] #tabbar button.on:not(.start) .icn{color:#fff}
+/* the start button in the middle: the floating green "+"/play disc */
+:root[data-theme="light"][data-accent="lime"] #tabbar button.start .cir{background:var(--dayon-grad);color:#fff;box-shadow:var(--dayon-glow)}
+:root[data-theme="light"][data-accent="lime"] #tabbar button.start.rec .cir{background:var(--orange)}
+
+/* the week strip: today is a tall green pill with its date in a white disc */
+:root[data-theme="light"][data-accent="lime"] .wday.today{background:var(--dayon-grad);border-radius:999px;box-shadow:var(--dayon-glow)}
+:root[data-theme="light"][data-accent="lime"] .wday.today .lbl{color:#fff}
+:root[data-theme="light"][data-accent="lime"] .wday.today .num{background:#fff;color:#141414}
+:root[data-theme="light"][data-accent="lime"] .wday.today .dot.done{background:#fff}
+
+/* a trainer editing a student's plan (components/StudentPlanBar.jsx): whose plan, Save, Leave */
+.conn-bar.dayon-edit .conn{background:var(--acc-soft);color:var(--label)}
+.conn-bar.dayon-edit .conn .icn{color:var(--acc-ink)}
+.conn-bar.dayon-edit .conn-a{min-height:30px}
+.conn-bar.dayon-edit .conn-a.dayon-edit-save{background:var(--acc);color:#fff}
+.conn-bar.dayon-edit .conn-a:disabled{opacity:.6}

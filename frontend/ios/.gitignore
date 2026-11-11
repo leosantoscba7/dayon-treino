@@ -1,0 +1,17 @@
+App/build
+App/Pods
+App/output
+App/App/public
+DerivedData
+xcuserdata
+
+# Cordova plugins for Capacitor
+capacitor-cordova-ios-plugins
+
+# Generated Config files
+App/App/capacitor.config.json
+App/App/config.xml
+
+# Written by pod install (cap sync); regenerated on every build:mobile
+App/Podfile.lock
+App/App.xcworkspace/contents.xcworkspacedata

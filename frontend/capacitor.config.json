@@ -1,0 +1,24 @@
+{
+  "appId": "com.dayon.treino",
+  "appName": "DAYON - Treino",
+  "webDir": "dist",
+  "backgroundColor": "#ffffff",
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable"
+    },
+    "FirebaseMessaging": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "SplashScreen": {
+      "launchShowDuration": 8000,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 180,
+      "backgroundColor": "#ffffff",
+      "showSpinner": false
+    }
+  }
+}

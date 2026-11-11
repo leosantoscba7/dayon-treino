@@ -1,0 +1,81 @@
+# Exercise media downloaded by installs before v1.4.0 (now in catalogue/media); kept ignored so an
+# old folder never gets committed by accident
+media/img/
+media/gif/
+
+# Runtime data — users, passkeys, per-user state, session secret
+data/
+
+# Local config
+.env
+
+# Build output / deps
+frontend/dist/
+node_modules/
+*.log
+.DS_Store
+node_modules
+.claude/
+.agents/
+.superpowers/
+
+# Nix build result symlinks
+result
+result-*
+
+# CI reports (test:* jobs write these next to the suites)
+junit.xml
+coverage/
+test-results.json
+test-results.jsonl
+lcov.info
+/stats/
+frontend/bundle-size.json
+
+# Local planning notes
+docs/superpowers/plans/
+
+# Python and Kotlin build leftovers (scripts/, the Android build)
+__pycache__/
+*.pyc
+.kotlin/
+
+# The maintainer's brand material (logo variants, merch, Buy Me a Coffee covers) sits next to the
+# tracked banner and screenshots but is not part of the repository; keep it out of a `git add -A`
+assets/logo/
+assets/merch/
+assets/tee/
+assets/bmc-cover*
+# scripts/pdf/render-samples.mjs output (npm run pdf:check)
+frontend/pdf-samples/
+
+# Cloudflare fallback build (cloudflare/build.sh)
+/dist/
+.wrangler/
+
+# DAYON - Treino: the real Firebase files for remote pushes stay on the build Mac, out of the
+# public (AGPL) source. Where they go and why: docs/dayon/PUSH.md
+frontend/ios/App/App/GoogleService-Info.plist
+frontend/android/app/google-services.json
+
+# DAYON - Treino: the Firebase web config lives only in a local Vite env file (docs/dayon/PAINEL.md).
+# frontend/.env.example (placeholders) is the only one committed.
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firestore-tests/node_modules/
+
+# Exercise media (Gym visual licence, not AGPL) stays out of the public source.
+# How to get a licensed copy: README.md and catalogue/media/NOTICE.md
+catalogue/media/clip/
+catalogue/media/still/
+
+# Omitted from this public snapshot: upstream openGym CI would not run correctly
+# on this fork, and the connected GitHub token cannot create workflow files.
+.github/workflows/

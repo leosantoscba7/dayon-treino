@@ -1,0 +1,4 @@
+/* Dayon Treino on the Apple Watch, uk: Info.plist. Written by ios/ci/watch-strings.mjs. */
+
+"NSHealthShareUsageDescription" = "Dayon Treino показує пульс під час тренування і біля кожного підходу.";
+"NSHealthUpdateUsageDescription" = "Dayon Treino зберігає тренування в Apple Здоров’я, якщо ти це ввімкнеш.";

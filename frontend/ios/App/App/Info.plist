@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>pt-BR</string>
+	<key>CFBundleDisplayName</key>
+	<string>DAYON</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<!-- dayontreino:// links: a widget tap opens the screen it is about (lib/widget-links.js), and opengym.ch/nfc hands a read sticker to the app as dayontreino://nfc?... (NfcTagsPlugin), and opengym.ch/r a friend's routine as dayontreino://r#... (RoutineShare.jsx). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.dayon.treino.widgets</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dayontreino</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- "Connect to my server" and the Coach's own endpoint may be plain http:// on the
+		     home network (#428), like on Android. Local addresses only; everything on the
+		     internet stays HTTPS. -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Usado para acessar o seu próprio servidor do Dayon Treino ou um modelo de IA na sua rede de casa, quando você conecta um.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Usado para ler o QR code da sua carteirinha da academia, tirar foto ou gravar vídeo de um exercício que você cria e filmar uma série para conferir a execução.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Usado para gravar o som do vídeo de um exercício que você cria ou de uma série que você filma.</string>
+	<key>BAAppGroupID</key>
+	<string>group.com.dayon.treino</string>
+	<key>BAHasManagedAssetPacks</key>
+	<true/>
+	<key>BAUsesAppleHosting</key>
+	<true/>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.dayon.treino.nudge-check</string>
+	</array>
+	<!-- processing: as in Apple's iPhone workout sample ("Building a workout app for iPhone and
+	     iPad", WWDC25 322) for the iPhone's own workout session (#818, AirPods heart rate, iOS 26).
+	     Not watchOS's workout-processing, which Apple lists for the watch only. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Usado para mostrar seus batimentos durante o treino, medidos pelo Apple Watch ou por AirPods que medem, e, se você ativar, trazer para o seu registro os batimentos salvos pelo relógio e as pesagens de outros apps.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Usado para salvar no app Saúde seus treinos concluídos (com os batimentos medidos) e suas pesagens, se você ativar.</string>
+	<!-- Gym reminder (#614): off until switched on in Settings. Region monitoring needs Always,
+	     but no background location mode (UIBackgroundModes stays without "location"). -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Usado para marcar no mapa a academia onde você está, para o lembrete de academia. Sua localização fica neste iPhone.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Permite que o lembrete de academia perceba quando você chega a uma academia cadastrada, mesmo com o Dayon Treino fechado. O iOS só observa esses lugares, e sua localização nunca sai deste iPhone.</string>
+	<!-- NFC stickers (NfcTagsPlugin.swift): Core NFC's own sheet, only when you write one. -->
+	<key>NFCReaderUsageDescription</key>
+	<string>Usado para gravar links do Dayon Treino nos seus adesivos NFC, para que um toque inicie o treino ou abra um exercício.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Usado para confirmar que é você antes de excluir sua conta.</string>
+</dict>
+</plist>

@@ -1,0 +1,226 @@
+rules_version = '2';
+
+// DAYON - Treino: regras do Firestore (projeto dayon---treino). Explicadas passo a passo em
+// docs/dayon/PAINEL.md; testadas em firestore-tests/ (emulador).
+//
+//   users/{uid}                    perfil: nome, papel ('aluno' | 'personal'), email, datas
+//   users/{uid}/plan/{doc}         o plano (um doc, 'atual'): o aluno e o personal com vínculo ativo
+//   users/{uid}/workouts/{id}      um doc por treino do histórico: o aluno escreve, o personal lê
+//   users/{uid}/estado/{doc}       o resto do perfil (ajustes, pesagens...): só o aluno
+//   vinculos/{personalId_alunoId}  { personalId, alunoId, status: 'pendente' | 'ativo' | 'encerrado' }
+//   convitesPersonal/{codigo}      códigos de uso único que o Léo cria no Console
+//   convitesAluno/{codigo}         códigos de uso único que um personal cria para um aluno
+//
+// Sem Cloud Functions (plano Spark): tudo o que precisa de duas escritas juntas (resgatar um
+// convite e virar personal; resgatar um convite e criar o vínculo) vai num lote (batch), e cada
+// lado confere o outro com getAfter.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function convitePersonalPath(codigo) { return /databases/$(database)/documents/convitesPersonal/$(codigo); }
+    function conviteAlunoPath(codigo) { return /databases/$(database)/documents/convitesAluno/$(codigo); }
+    function userPath(uid) { return /databases/$(database)/documents/users/$(uid); }
+    function vinculoPath(personalId, alunoId) {
+      return /databases/$(database)/documents/vinculos/$(personalId + '_' + alunoId);
+    }
+    function isPersonal(uid) {
+      return exists(userPath(uid)) && get(userPath(uid)).data.papel == 'personal';
+    }
+    // Quem pede é personal e tem vínculo ativo com o aluno `alunoId`.
+    function personalDe(alunoId) {
+      return signedIn() && request.auth.uid != alunoId
+        && isPersonal(request.auth.uid)
+        && exists(vinculoPath(request.auth.uid, alunoId))
+        && get(vinculoPath(request.auth.uid, alunoId)).data.status == 'ativo';
+    }
+    // Quem pede é aluno com vínculo ativo com o personal `personalId` (para ler o nome dele).
+    function alunoDe(personalId) {
+      return signedIn() && request.auth.uid != personalId
+        && exists(vinculoPath(personalId, request.auth.uid))
+        && get(vinculoPath(personalId, request.auth.uid)).data.status == 'ativo';
+    }
+    function onlyKeys(keys) { return request.resource.data.keys().hasOnly(keys); }
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+    // O formato dos docs de dados (lib/dayon-model.js): o conteúdo vai em `json`, texto.
+    // 1 000 000 caracteres fica abaixo do limite de 1 MiB por documento.
+    function dataDoc(extra) {
+      return onlyKeys(['v', 'json', 'ts', 'atualizadoEm', 'por'].concat(extra))
+        && request.resource.data.v is int
+        && request.resource.data.json is string
+        && request.resource.data.json.size() < 1000000
+        && request.resource.data.atualizadoEm == request.time
+        && request.resource.data.por == request.auth.uid;
+    }
+
+    // ---- Perfil ------------------------------------------------------------------------------
+    match /users/{uid} {
+      allow get: if isSelf(uid) || personalDe(uid) || alunoDe(uid);
+      allow list: if false;   // ninguém lista os usuários, nem o personal
+
+      // Toda conta nova nasce aluno.
+      allow create: if isSelf(uid)
+        && onlyKeys(['nome', 'papel', 'email', 'criadoEm', 'atualizadoEm'])
+        && request.resource.data.papel == 'aluno'
+        && request.resource.data.nome is string && request.resource.data.nome.size() <= 80
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.criadoEm == request.time
+        && request.resource.data.atualizadoEm == request.time;
+
+      // O próprio aluno muda o nome. O papel só muda de 'aluno' para 'personal', e só no mesmo
+      // lote em que esta pessoa resgatou um convite de personal válido (convitesPersonal abaixo):
+      // antes do lote o convite estava livre, depois dele está em nome dela.
+      allow update: if isSelf(uid)
+        && request.resource.data.atualizadoEm == request.time
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.criadoEm == resource.data.criadoEm
+        && request.resource.data.nome is string && request.resource.data.nome.size() <= 80
+        && (
+          (changedOnly(['nome', 'atualizadoEm'])
+            && request.resource.data.papel == resource.data.papel)
+          || (changedOnly(['nome', 'atualizadoEm', 'papel', 'conviteUsado'])
+            && resource.data.papel == 'aluno'
+            && request.resource.data.papel == 'personal'
+            && request.resource.data.conviteUsado is string
+            && promovidoAgora(request.resource.data.conviteUsado))
+        );
+      allow delete: if false;
+
+      function promovidoAgora(codigo) {
+        let antes = get(convitePersonalPath(codigo));
+        let depois = getAfter(convitePersonalPath(codigo));
+        return antes.data.ativo == true && antes.data.usadoPor == null
+          && depois.data.ativo == false && depois.data.usadoPor == request.auth.uid;
+      }
+
+      // ---- Plano: o aluno e o personal com vínculo ativo lêem e escrevem -------------------
+      match /plan/{planDoc} {
+        allow read: if isSelf(uid) || personalDe(uid);
+        allow create, update: if (isSelf(uid) || personalDe(uid)) && dataDoc([]);
+        allow delete: if isSelf(uid);
+      }
+
+      // ---- Histórico: só o aluno escreve; o personal com vínculo ativo lê ------------------
+      match /workouts/{workoutId} {
+        allow read: if isSelf(uid) || personalDe(uid);
+        allow create, update: if isSelf(uid) && dataDoc(['d']);
+        allow delete: if isSelf(uid);
+      }
+
+      // ---- O resto do perfil (ajustes, pesagens, medidas): só o aluno ----------------------
+      match /estado/{estadoDoc} {
+        allow read, delete: if isSelf(uid);
+        allow create, update: if isSelf(uid) && dataDoc([]);
+      }
+    }
+
+    // ---- Convites de personal (o Léo cria e apaga no Console) ----------------------------
+    match /convitesPersonal/{codigo} {
+      allow get: if signedIn();
+      allow list, create, delete: if false;
+      // Resgatar: só um convite ativo e livre, só para si mesmo, e só junto com a promoção do
+      // próprio perfil no mesmo lote (users/{uid} acima confere o outro lado).
+      allow update: if signedIn()
+        && resource.data.ativo == true
+        && resource.data.usadoPor == null
+        && changedOnly(['ativo', 'usadoPor', 'usadoEm'])
+        && request.resource.data.ativo == false
+        && request.resource.data.usadoPor == request.auth.uid
+        && request.resource.data.usadoEm == request.time
+        && get(userPath(request.auth.uid)).data.papel == 'aluno'
+        && getAfter(userPath(request.auth.uid)).data.papel == 'personal'
+        && getAfter(userPath(request.auth.uid)).data.conviteUsado == codigo;
+    }
+
+    // ---- Convites de aluno (um personal cria; o aluno resgata e o vínculo nasce ativo) ------
+    match /convitesAluno/{codigo} {
+      allow get: if signedIn();
+      // O personal lista só os próprios convites (a consulta precisa filtrar personalId == uid).
+      allow list: if signedIn() && resource.data.personalId == request.auth.uid;
+      allow create: if signedIn()
+        && isPersonal(request.auth.uid)
+        && codigo.size() >= 10
+        && onlyKeys(['personalId', 'personalNome', 'ativo', 'usadoPor', 'usadoEm', 'criadoEm'])
+        && request.resource.data.personalId == request.auth.uid
+        && request.resource.data.personalNome is string && request.resource.data.personalNome.size() <= 80
+        && request.resource.data.ativo == true
+        && request.resource.data.usadoPor == null
+        && request.resource.data.usadoEm == null
+        && request.resource.data.criadoEm == request.time;
+      allow update: if signedIn() && (
+        // o aluno resgata: no mesmo lote cria (ou reativa) o vínculo com este personal
+        (resource.data.ativo == true
+          && resource.data.usadoPor == null
+          && request.auth.uid != resource.data.personalId
+          && changedOnly(['ativo', 'usadoPor', 'usadoEm'])
+          && request.resource.data.ativo == false
+          && request.resource.data.usadoPor == request.auth.uid
+          && request.resource.data.usadoEm == request.time
+          && getAfter(vinculoPath(resource.data.personalId, request.auth.uid)).data.status == 'ativo'
+          && getAfter(vinculoPath(resource.data.personalId, request.auth.uid)).data.conviteUsado == codigo)
+        // o personal cancela um convite seu que ainda não foi usado
+        || (resource.data.personalId == request.auth.uid
+          && resource.data.usadoPor == null
+          && changedOnly(['ativo'])
+          && request.resource.data.ativo == false)
+      );
+      allow delete: if signedIn() && resource.data.personalId == request.auth.uid;
+    }
+
+    // ---- Vínculos personal <-> aluno: id = personalId + '_' + alunoId -----------------------
+    match /vinculos/{vinculoId} {
+      // Pelo próprio id (personalId_alunoId) a pessoa já sabe se o vínculo é dela: assim o app
+      // consegue perguntar por um vínculo que ainda não existe sem receber "permissão negada".
+      allow get: if signedIn()
+        && (vinculoId.split('_')[0] == request.auth.uid || vinculoId.split('_')[1] == request.auth.uid);
+      // Listar só filtrando personalId ou alunoId igual a quem pede.
+      allow list: if signedIn()
+        && (resource.data.personalId == request.auth.uid || resource.data.alunoId == request.auth.uid);
+
+      // O aluno cria o vínculo ao resgatar, no mesmo lote, um convite livre deste personal.
+      allow create: if signedIn()
+        && onlyKeys(['personalId', 'alunoId', 'status', 'conviteUsado', 'criadoEm', 'atualizadoEm'])
+        && request.resource.data.alunoId == request.auth.uid
+        && request.resource.data.personalId != request.auth.uid
+        && vinculoId == request.resource.data.personalId + '_' + request.auth.uid
+        && request.resource.data.status == 'ativo'
+        && request.resource.data.criadoEm == request.time
+        && request.resource.data.atualizadoEm == request.time
+        && conviteResgatado(request.resource.data.conviteUsado, request.resource.data.personalId);
+
+      allow update: if signedIn()
+        && request.resource.data.personalId == resource.data.personalId
+        && request.resource.data.alunoId == resource.data.alunoId
+        && request.resource.data.criadoEm == resource.data.criadoEm
+        && request.resource.data.atualizadoEm == request.time
+        && (
+          // o aluno ou o personal encerra
+          ((request.auth.uid == resource.data.alunoId || request.auth.uid == resource.data.personalId)
+            && changedOnly(['status', 'atualizadoEm'])
+            && request.resource.data.status == 'encerrado')
+          // o aluno volta a ligar um vínculo encerrado com um convite novo do mesmo personal
+          || (request.auth.uid == resource.data.alunoId
+            && resource.data.status != 'ativo'
+            && changedOnly(['status', 'atualizadoEm', 'conviteUsado'])
+            && request.resource.data.status == 'ativo'
+            && conviteResgatado(request.resource.data.conviteUsado, resource.data.personalId))
+        );
+      allow delete: if false;
+
+      // O convite era deste personal, estava livre antes do lote e fica em nome de quem pede
+      // depois dele; o personal continua sendo personal.
+      function conviteResgatado(codigo, personalId) {
+        let antes = get(conviteAlunoPath(codigo));
+        let depois = getAfter(conviteAlunoPath(codigo));
+        return codigo is string
+          && antes.data.personalId == personalId
+          && antes.data.ativo == true && antes.data.usadoPor == null
+          && depois.data.ativo == false && depois.data.usadoPor == request.auth.uid
+          && isPersonal(personalId);
+      }
+    }
+  }
+}

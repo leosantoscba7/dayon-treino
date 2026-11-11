@@ -1,0 +1,4 @@
+/* Dayon Treino on the Apple Watch, ar: Info.plist. Written by ios/ci/watch-strings.mjs. */
+
+"NSHealthShareUsageDescription" = "يعرض Dayon Treino نبضك أثناء التمرين وبجانب كل مجموعة.";
+"NSHealthUpdateUsageDescription" = "يحفظ Dayon Treino تمارينك في Apple صحتي إذا فعّلت ذلك.";

@@ -1,0 +1,3 @@
+# Keep Gym visual stills and clips out of source archives and the public snapshot.
+catalogue/media/clip/** export-ignore
+catalogue/media/still/** export-ignore

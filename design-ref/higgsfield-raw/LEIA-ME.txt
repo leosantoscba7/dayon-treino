@@ -1,0 +1,16 @@
+Bases Higgsfield (gpt_image_2_6, high/2k/png) — 10/11/2026, America/Cuiaba.
+Regra: a IA NÃO escreveu texto nestas imagens. O texto "DAY ON" deve ser composto depois por SVG/script.
+
+Arquivos:
+- icon-base.png  2048x2048 RGB  — USAR. Fundo branco, squircle verde lima→folha, sombra suave, SEM texto.
+  Job f48dabe6-c92d-494d-9983-525c20abd468
+- splash-base.png 1520x2688 RGB — USAR. Fundo branco com glow lima bem sutil no centro, SEM texto, espaço para o logo.
+  Job 012408c9-2b05-422c-868b-db403fa3f48c
+- pill-base.png 2688x1520 RGBA — NÃO usar como pílula do "ON". Alpha sujo (halo/glow em ~34% dos pixels, bbox quase a imagem inteira, nenhum pixel 100% opaco).
+  Job 5fcec885-61c3-49e3-a3b2-c893c8975fff
+  Desenhe a pílula verde do "ON" de forma determinística em SVG (gradiente lima→folha, cantos bem arredondados). Se existir pill-clean.png, é só um recorte experimental do núcleo; prefira SVG.
+
+Composição do logo (como nas refs design-ref/ref-inicio.png e ref-calorias.png):
+- "DAY" em serif itálico escuro (quase preto)
+- "ON" em branco/off-white, dentro de uma pílula verde lima→folha
+- Sem logos oficiais de terceiros
