@@ -4,15 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DAYON - Treino: Privacidade</title>
-<meta name="description" content="O que o DAYON - Treino faz com os seus dados: eles ficam no seu celular.">
+<meta name="description" content="O que o DAYON - Treino faz com os seus dados: uso sem conta fica no aparelho; a conta opcional guarda o treino no Firebase.">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" sizes="96x96" href="/icon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="stylesheet" href="styles.css?v=29">
-<script>document.documentElement.className += ' js'</script>
+<link rel="stylesheet" href="styles.css?v=30">
 <style>
   :root { --dayon: #30a323; }
   .brand { font-weight: 800; }
@@ -29,7 +28,7 @@
   .note-d { opacity: .75; font-size: .95rem; }
 </style>
 </head>
-<body class="topnav">
+<body class="topnav js">
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <nav><div class="wrap nav-in">
   <a class="brand" href="/">
@@ -44,33 +43,60 @@
 
 <main id="main" class="wrap prose">
   <h1>Privacidade</h1>
+  <p class="note-d">Atualizado em 11 de novembro de 2026.</p>
 
   <h2 id="resumo">Em poucas palavras</h2>
   <ul>
-    <li>O app não pede cadastro, não tem anúncios e não usa ferramentas de rastreamento ou estatística.</li>
-    <li>Seus treinos, pesagens e medidas ficam guardados só no seu celular.</li>
-    <li>Nada sai do aparelho, a não ser que você mesmo exporte um backup, compartilhe uma imagem
-      ou uma rotina, ou ative algo que conversa com outro app (por exemplo, o app Saúde da Apple).</li>
+    <li>Você pode usar o app e o site sem criar conta. Nesse caso, seus treinos, pesagens e medidas ficam só no seu aparelho.</li>
+    <li>Se quiser, pode criar uma conta opcional com e-mail e senha. Aí o nome, o e-mail, o papel (aluno ou personal), o plano de treino e o histórico são guardados no Firebase, serviço da Google, na região southamerica-east1 (São Paulo).</li>
+    <li>Não vendemos os seus dados e não usamos anúncios nem ferramentas de rastreamento.</li>
+    <li>O código é livre, sob a licença GNU AGPL v3:
+      <a href="https://github.com/leosantoscba7/dayon-treino" rel="noopener">github.com/leosantoscba7/dayon-treino</a>.</li>
   </ul>
+
+  <h2 id="sem-conta">Uso sem conta</h2>
+  <p>Sem cadastro, nada vai para os nossos servidores. Os dados permanecem no aparelho, a não ser que você mesmo exporte um backup, compartilhe uma imagem ou uma rotina, ou ative algo que conversa com outro app (por exemplo, o app Saúde da Apple).</p>
+
+  <h2 id="conta">Conta opcional</h2>
+  <p>A conta é feita com e-mail e senha, pelo Firebase Authentication. Quando você entra, guardamos no Firestore:</p>
+  <ul>
+    <li>nome e e-mail;</li>
+    <li>o papel na conta (aluno ou personal);</li>
+    <li>o plano de treino;</li>
+    <li>o histórico e o estado dos treinos.</li>
+  </ul>
+  <p>Esses dados ficam nos servidores da Google (Firebase), na região southamerica-east1.</p>
+
+  <h2 id="personal">Vínculo com personal</h2>
+  <p>Se um personal e um aluno se vinculam (com um código de convite), o personal pode ver o perfil, o plano e o histórico de treinos do aluno, e pode editar o plano. O aluno também pode editar o próprio plano.</p>
+
+  <h2 id="notificacoes">Notificações</h2>
+  <p>O app pode pedir permissão para avisos no próprio celular (descanso entre séries e lembretes). Se você permitir as notificações, também podemos enviar avisos pelo Firebase Cloud Messaging, por exemplo novidades do app.</p>
 
   <h2 id="permissoes">Permissões do celular</h2>
   <p>O app só pede permissões quando você usa a função correspondente: câmera (ler o QR code da
     academia, fotos e vídeos de exercícios), microfone (som desses vídeos), localização (lembrete
     de academia, que fica no próprio celular), Saúde (batimentos, treinos e pesagens, se você ativar),
-    NFC (gravar adesivos) e notificações (descanso entre séries e lembretes).</p>
+    NFC (gravar adesivos) e notificações (descanso entre séries, lembretes e avisos enviados pelo app).</p>
 
-  <h2 id="servidor">Servidor próprio (opcional)</h2>
-  <p>Quem quiser pode conectar o app a um servidor próprio para sincronizar entre aparelhos. Nesse
-    caso os dados vão para o servidor que a própria pessoa escolheu e controla. Isso é opcional e
-    fica desligado até ser configurado.</p>
+  <h2 id="exclusao">Exclusão da conta e dos dados</h2>
+  <p>Para apagar sua conta e os dados guardados no Firebase, escreva para
+    <a href="mailto:leosantoscba7@gmail.com">leosantoscba7@gmail.com</a>.
+    Sem conta, basta limpar os dados do app ou desinstalá-lo no aparelho. Um backup que você tenha
+    exportado continua com você, para guardar ou apagar.</p>
 
   <h2 id="site">Este site</h2>
-  <p>Este site não usa cookies, estatísticas de visita nem conteúdo de terceiros.</p>
+  <p>Esta página de privacidade não usa cookies, estatísticas de visita nem conteúdo de terceiros.
+    O painel de treino, no mesmo endereço, guarda dados no próprio aparelho (armazenamento local) e,
+    se você entrar na conta, também no Firebase, como descrito acima. O site é servido pelo
+    Firebase Hosting (Google).</p>
 
   <h2 id="licenca">Código e licença</h2>
   <p>O DAYON - Treino é software livre sob a licença GNU AGPL v3 e é baseado no openGym, de Duarte
-    Santos. As imagens e animações dos exercícios são de Gym visual (gymvisual.com) e têm licença
-    própria; veja o arquivo NOTICE.md do projeto.</p>
+    Santos. O código-fonte está em
+    <a href="https://github.com/leosantoscba7/dayon-treino" rel="noopener">github.com/leosantoscba7/dayon-treino</a>.
+    As imagens e animações dos exercícios são de Gym visual (gymvisual.com) e têm licença
+    própria; veja o arquivo NOTICE.md do projeto. Essas mídias não são publicadas neste site.</p>
 </main>
 
 <footer><div class="wrap foot">
@@ -81,6 +107,6 @@
     <a href="/privacy.html">Privacidade</a>
   </div>
 </div></footer>
-<script src="site.js?v=29" defer></script>
+<script src="site.js?v=30" defer></script>
 </body>
 </html>

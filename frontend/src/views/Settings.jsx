@@ -56,7 +56,7 @@ import AppIconRow from '../components/AppIconRow.jsx'
 import { AnimationQualityRow } from '../components/Animations.jsx'
 import { ServerSyncSection, KeptChangesRows, leaveServer, connectServer, passkeySignIn } from '../components/ServerSync.jsx'
 import { useDayon } from '../store/useDayon.js'
-import { CLOUD_SITE, SOURCE_CODE_URL } from '../lib/dayon-config.js'
+import { CLOUD_SITE, SOURCE_CODE_URL, PRIVACY_URL } from '../lib/dayon-config.js'
 import { openDayonAccount, dayonStatusText } from '../components/DayonAccount.jsx'
 import { passwordOn, PasswordRow, openPasswordSignIn, openPasswordRegister } from '../components/PasswordAuth.jsx'
 import { usePasskeys, PasskeysRow, DeviceLinkRow, openDeviceLinkRedeem, PairSheet } from '../components/Passkeys.jsx'
@@ -1167,7 +1167,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           "Source code" points at this project's public repo; openGym stays credited with its own link. */}
       <div className="dim small sp-version source-credit">
         DAYON - Treino v{__APP_VERSION__} · <a href={SOURCE_CODE_URL} target="_blank" rel="noopener">{t('Source code')}</a>
-        {' · '}{t('License AGPL-3.0')}<br />
+        {' · '}{t('License AGPL-3.0')}
+        {' · '}
+        <a href={PRIVACY_URL} target="_blank" rel="noopener">{t('Privacy')}</a><br />
         {t('Based on')}{' '}
         <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">openGym</a>
         {' '}{t('by Duarte Santos')}<br />

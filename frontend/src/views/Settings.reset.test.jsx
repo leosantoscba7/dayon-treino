@@ -161,5 +161,7 @@ describe('Settings — footer', () => {
     const upstream = [...host.querySelectorAll('a')].find(a => a.textContent === 'openGym')
     expect(upstream.getAttribute('href')).toBe('https://github.com/DuarteSantos8/openGym')
     expect(host.textContent).toContain('License AGPL-3.0')
+    const privacy = [...host.querySelectorAll('a')].find(a => a.textContent === 'Privacy')
+    expect(privacy.getAttribute('href')).toBe('https://dayon---treino.web.app/privacy.html')
   })
 })

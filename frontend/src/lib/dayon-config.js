@@ -16,6 +16,7 @@ export const CLOUD_SITE = ENV.VITE_DAYON_CLOUD === '1'
 // Public source of this project (AGPL): a discreet "Source code" link on the website
 // and in Settings → About points here. The original openGym repo stays credited separately.
 export const SOURCE_CODE_URL = 'https://github.com/leosantoscba7/dayon-treino'
+export const PRIVACY_URL = 'https://dayon---treino.web.app/privacy.html'
 
 const KEYS = {
   apiKey: 'VITE_FIREBASE_API_KEY',

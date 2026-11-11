@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { firebaseConfig, dayonAvailable, SOURCE_CODE_URL } from './dayon-config.js'
+import { firebaseConfig, dayonAvailable, SOURCE_CODE_URL, PRIVACY_URL } from './dayon-config.js'
 
 const full = {
   VITE_FIREBASE_API_KEY: 'chave', VITE_FIREBASE_AUTH_DOMAIN: 'dayon---treino.firebaseapp.com',
@@ -13,6 +13,7 @@ describe('firebaseConfig', () => {
   })
   it('names the public source repository the AGPL offer links to', () => {
     expect(SOURCE_CODE_URL).toBe('https://github.com/leosantoscba7/dayon-treino')
+    expect(PRIVACY_URL).toBe('https://dayon---treino.web.app/privacy.html')
   })
   it('is null when any required value is missing or blank: the app stays local', () => {
     expect(firebaseConfig({})).toBeNull()

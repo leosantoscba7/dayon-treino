@@ -6,7 +6,10 @@
   "hosting": {
     "public": "frontend/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "exercise-media/**"],
-    "rewrites": [{ "source": "**", "destination": "/index.html" }],
+    "rewrites": [
+      { "source": "/privacy", "destination": "/privacy.html" },
+      { "source": "**", "destination": "/index.html" }
+    ],
     "headers": [
       {
         "source": "**",
@@ -18,7 +21,7 @@
         ]
       },
       {
-        "source": "/@(index.html|sw.js|manifest.json)",
+        "source": "/@(index.html|sw.js|manifest.json|privacy.html)",
         "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       },
       {

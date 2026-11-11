@@ -32,7 +32,7 @@ import { ChallengesCard } from '../components/Challenges.jsx'
 import { isOn } from '../lib/modules.js'
 import DayonLogo from '../components/DayonLogo.jsx'
 import { MOBILE } from '../lib/mobile.js'
-import { SOURCE_CODE_URL } from '../lib/dayon-config.js'
+import { SOURCE_CODE_URL, PRIVACY_URL } from '../lib/dayon-config.js'
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export default function Home() {
@@ -283,6 +283,8 @@ export default function Home() {
     {!MOBILE && <p className="source-credit">
       <a href={SOURCE_CODE_URL} target="_blank" rel="noopener">{t('Source code')}</a>
       {' · '}{t('License AGPL-3.0')}
+      {' · '}
+      <a href={PRIVACY_URL} target="_blank" rel="noopener">{t('Privacy')}</a>
     </p>}
   </div>
 }

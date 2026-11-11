@@ -19,4 +19,5 @@ if (existsSync(join(dist, 'exercise-media'))) fail('dist/exercise-media exists: 
 const media = files.filter(f => /\.(mp4|webm|gif)$/i.test(f) || (/\.webp$/i.test(f) && /\/\d{4,5}\.webp$/.test(f)))
 if (media.length) fail('exercise media in dist/: ' + media.slice(0, 5).map(f => relative(dist, f)).join(', '))
 if (/name="opengym-flavor" content="mobile"/.test(readFileSync(join(dist, 'index.html'), 'utf8'))) fail('this is the phone build (VITE_MOBILE=1), not the website')
+if (!existsSync(join(dist, 'privacy.html'))) fail('dist/privacy.html is missing: the privacy policy must be a real page on the website')
 console.log(`check-hosting-bundle: ok (${files.length} files, no exercise media)`)
