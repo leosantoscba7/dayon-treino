@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': '闪烁屏幕',
   'Version': '版本',
   'Source code': '源代码',
+  'Privacy': '隐私',
   '{0} rest': '休息 {0}',
   'No rest timer': '不计时休息',
   'Buttons, timed sets': '按钮、计时组',

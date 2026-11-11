@@ -1898,6 +1898,7 @@ export default {
   'Flash the screen': 'وميض الشاشة',
   'Version': 'الإصدار',
   'Source code': 'الشيفرة المصدرية',
+  'Privacy': 'الخصوصية',
   '{0} rest': 'راحة {0}',
   'No rest timer': 'بدون مؤقت راحة',
   'Buttons, timed sets': 'الأزرار، المجموعات المؤقتة',

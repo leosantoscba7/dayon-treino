@@ -65,18 +65,35 @@ export const useDayon = create((set, get) => {
   }
 
   // Someone is signed in (or no longer is) on this device.
+  // `perfil` from criarConta / entrar is applied at once so Settings → Account shows the
+  // name and student role without waiting for a second read. Auth fires as soon as the
+  // account exists, before that first write lands, so a later empty read must not wipe it.
+  const setSignedIn = (u, perfil) => {
+    write(UID_KEY, u.uid)
+    const owner = read(OWNER_KEY)
+    // This device's copy belongs to another Dayon account: ask before mixing the two.
+    const choice = !!owner && owner !== u.uid && hasData(useStore.getState().S)
+    const prev = get()
+    const same = prev.user?.uid === u.uid
+    const nome = (perfil && perfil.nome) || u.displayName || (same ? prev.user.nome : '') || ''
+    set({
+      user: { uid: u.uid, email: u.email || '', nome },
+      perfil: perfil || (same ? prev.perfil : null),
+      choice, authReady: true, error: null,
+    })
+    return choice
+  }
   const onUser = async u => {
     if (!u) {
       if (get().user) write(UID_KEY, null)
       set({ user: null, perfil: null, status: 'off', choice: false, authReady: true })
       return
     }
-    write(UID_KEY, u.uid)
-    const owner = read(OWNER_KEY)
-    // This device's copy belongs to another Dayon account: ask before mixing the two.
-    const choice = !!owner && owner !== u.uid && hasData(useStore.getState().S)
-    set({ user: { uid: u.uid, email: u.email || '', nome: u.displayName || '' }, choice, authReady: true, error: null })
-    cloudApi().then(c => c.lerPerfil(u.uid)).then(perfil => { if (get().user?.uid === u.uid) set({ perfil }) }).catch(() => {})
+    const choice = setSignedIn(u)
+    cloudApi().then(c => c.lerPerfil(u.uid)).then(perfil => {
+      if (get().user?.uid !== u.uid || !perfil) return
+      set({ perfil, user: { ...get().user, nome: perfil.nome || get().user.nome } })
+    }).catch(() => {})
     if (!choice) get().syncNow()
   }
 
@@ -115,12 +132,14 @@ export const useDayon = create((set, get) => {
 
     async signUp(f) {
       const c = await cloudApi()
-      await c.criarConta(f)
+      const { user, perfil } = await c.criarConta(f)
+      setSignedIn(user, perfil)
       await get().listen()
     },
     async signIn(f) {
       const c = await cloudApi()
-      await c.entrar(f)
+      const { user, perfil } = await c.entrar(f)
+      setSignedIn(user, perfil)
       await get().listen()
     },
     // After a sign-in from the screen: start following the account (start() may have skipped it).

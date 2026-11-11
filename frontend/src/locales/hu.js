@@ -1846,6 +1846,7 @@ export default {
   'Flash the screen': 'Villogjon a képernyő',
   'Version': 'Verzió',
   'Source code': 'Forráskód',
+  'Privacy': 'Adatvédelem',
   '{0} rest': '{0} pihenő',
   'No rest timer': 'Nincs pihenő időzítő',
   'Buttons, timed sets': 'Gombok, időre menő sorozatok',

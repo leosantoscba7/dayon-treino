@@ -1854,6 +1854,7 @@ export default {
   'Flash the screen': 'กะพริบหน้าจอ',
   'Version': 'เวอร์ชัน',
   'Source code': 'ซอร์สโค้ด',
+  'Privacy': 'ความเป็นส่วนตัว',
   '{0} rest': 'พัก {0}',
   'No rest timer': 'ไม่จับเวลาพัก',
   'Buttons, timed sets': 'ปุ่ม, เซ็ตจับเวลา',

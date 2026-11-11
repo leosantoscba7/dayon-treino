@@ -2536,6 +2536,7 @@ export const PT_BR_OVERRIDES = {
   "Your trainer will no longer see your history or edit your plan. Your data stays with you.": "Seu personal não vai mais ver seu histórico nem editar seu plano. Seus dados continuam com você.",
   "your trainer": "seu personal",
   "License AGPL-3.0": "Licença AGPL-3.0",
+  "Privacy": "Privacidade",
   "Based on": "Baseado no",
   "by Duarte Santos": "de Duarte Santos",
   "Done adding": "Concluir",

@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'Faire clignoter l’écran',
   'Version': 'Version',
   'Source code': 'Code source',
+  'Privacy': 'Confidentialité',
   '{0} rest': '{0} de repos',
   'No rest timer': 'Pas de minuteur',
   'Buttons, timed sets': 'Boutons, séries chronométrées',

@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'Ekranı yakıp söndür',
   'Version': 'Sürüm',
   'Source code': 'Kaynak kodu',
+  'Privacy': 'Gizlilik',
   '{0} rest': '{0} dinlenme',
   'No rest timer': 'Sayaç yok',
   'Buttons, timed sets': 'Düğmeler, süreli setler',

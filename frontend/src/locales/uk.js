@@ -1840,6 +1840,7 @@ export default {
   'Flash the screen': 'Блимати екраном',
   'Version': 'Версія',
   'Source code': 'Вихідний код',
+  'Privacy': 'Конфіденційність',
   '{0} rest': 'відпочинок {0}',
   'No rest timer': 'Без таймера',
   'Buttons, timed sets': 'Кнопки, підходи на час',

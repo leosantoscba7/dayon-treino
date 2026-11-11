@@ -1864,6 +1864,7 @@ export default {
   'Flash the screen': 'Blinka skärmen',
   'Version': 'Version',
   'Source code': 'Källkod',
+  'Privacy': 'Integritet',
   '{0} rest': '{0} vila',
   'No rest timer': 'Ingen vilotimer',
   'Buttons, timed sets': 'Knappar, tidsatta set',

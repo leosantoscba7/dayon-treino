@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'स्क्रीन चमकाएँ',
   'Version': 'संस्करण',
   'Source code': 'सोर्स कोड',
+  'Privacy': 'गोपनीयता',
   '{0} rest': '{0} आराम',
   'No rest timer': 'आराम टाइमर नहीं',
   'Buttons, timed sets': 'बटन, समय वाले सेट',

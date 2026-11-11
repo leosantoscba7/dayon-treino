@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'Piscar o ecrã',
   'Version': 'Versão',
   'Source code': 'Código-fonte',
+  'Privacy': 'Privacidade',
   'License AGPL-3.0': 'Licença AGPL-3.0',
   'Based on': 'Baseado no',
   'by Duarte Santos': 'de Duarte Santos',

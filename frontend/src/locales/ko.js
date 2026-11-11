@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': '화면 깜빡이기',
   'Version': '버전',
   'Source code': '소스 코드',
+  'Privacy': '개인정보',
   '{0} rest': '휴식 {0}',
   'No rest timer': '휴식 타이머 없음',
   'Buttons, timed sets': '버튼, 시간 세트',

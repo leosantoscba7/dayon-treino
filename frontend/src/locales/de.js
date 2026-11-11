@@ -1863,6 +1863,7 @@ export default {
   'Flash the screen': 'Bildschirm blinken lassen',
   'Version': 'Version',
   'Source code': 'Quellcode',
+  'Privacy': 'Datenschutz',
   '{0} rest': '{0} Pause',
   'No rest timer': 'Kein Pausen-Timer',
   'Buttons, timed sets': 'Knöpfe, Zeitsätze',

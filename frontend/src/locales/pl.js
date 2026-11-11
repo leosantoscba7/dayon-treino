@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'Mignij ekranem',
   'Version': 'Wersja',
   'Source code': 'Kod źródłowy',
+  'Privacy': 'Prywatność',
   '{0} rest': '{0} przerwy',
   'No rest timer': 'Bez minutnika',
   'Buttons, timed sets': 'Przyciski, serie na czas',

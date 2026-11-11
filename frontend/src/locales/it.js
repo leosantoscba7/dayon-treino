@@ -1843,6 +1843,7 @@ export default {
   'Flash the screen': 'Fai lampeggiare lo schermo',
   'Version': 'Versione',
   'Source code': 'Codice sorgente',
+  'Privacy': 'Privacy',
   '{0} rest': '{0} di recupero',
   'No rest timer': 'Nessun timer',
   'Buttons, timed sets': 'Pulsanti, serie a tempo',

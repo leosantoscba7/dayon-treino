@@ -1836,6 +1836,7 @@ export default {
   'Flash the screen': '閃爍螢幕',
   'Version': '版本',
   'Source code': '原始碼',
+  'Privacy': '隱私權',
   '{0} rest': '休息 {0}',
   'No rest timer': '不計時休息',
   'Buttons, timed sets': '按鈕、計時組',

@@ -1847,6 +1847,7 @@ export default {
   'Flash the screen': 'Мигать экраном',
   'Version': 'Версия',
   'Source code': 'Исходный код',
+  'Privacy': 'Конфиденциальность',
   '{0} rest': 'отдых {0}',
   'No rest timer': 'Без таймера',
   'Buttons, timed sets': 'Кнопки, подходы на время',

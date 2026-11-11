@@ -1885,6 +1885,7 @@ export default {
   'Flash the screen': 'স্ক্রিন ঝলকান',
   'Version': 'সংস্করণ',
   'Source code': 'সোর্স কোড',
+  'Privacy': 'গোপনীয়তা',
   '{0} rest': '{0} বিশ্রাম',
   'No rest timer': 'রেস্ট টাইমার নেই',
   'Buttons, timed sets': 'বোতাম, টাইমড সেট',
