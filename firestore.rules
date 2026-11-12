@@ -87,7 +87,9 @@ service cloud.firestore {
             && request.resource.data.conviteUsado is string
             && promovidoAgora(request.resource.data.conviteUsado))
         );
-      allow delete: if false;
+      // Apagar a conta (Ajustes > Conta > Apagar conta): só a própria pessoa, por último, depois
+      // de apagar o plano, os treinos, o estado, os vínculos e os convites de aluno dela.
+      allow delete: if isSelf(uid);
 
       function promovidoAgora(codigo) {
         let antes = get(convitePersonalPath(codigo));
@@ -208,7 +210,9 @@ service cloud.firestore {
             && request.resource.data.status == 'ativo'
             && conviteResgatado(request.resource.data.conviteUsado, resource.data.personalId))
         );
-      allow delete: if false;
+      // O aluno ou o personal do vínculo apaga (ao apagar a conta); um terceiro, nunca.
+      allow delete: if signedIn()
+        && (request.auth.uid == resource.data.alunoId || request.auth.uid == resource.data.personalId);
 
       // O convite era deste personal, estava livre antes do lote e fica em nome de quem pede
       // depois dele; o personal continua sendo personal.

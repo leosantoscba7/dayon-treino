@@ -2540,6 +2540,23 @@ export const PT_BR_OVERRIDES = {
   "Based on": "Baseado no",
   "by Duarte Santos": "de Duarte Santos",
   "Done adding": "Concluir",
+  // DAYON - Treino: Delete account (Settings → Account)
+  "Delete account": "Apagar conta",
+  "Deletes your Dayon account and everything of it in the cloud. It can’t be undone.": "Apaga sua conta Dayon e tudo dela na nuvem. Não tem volta.",
+  "Delete your Dayon account?": "Apagar sua conta Dayon?",
+  "This deletes for good, right away:": "Isto apaga para sempre, na hora:",
+  "Your Dayon account and profile": "Sua conta Dayon e seu perfil",
+  "Your plan, workouts and settings saved in the cloud": "Seu plano, seus treinos e seus ajustes salvos na nuvem",
+  "Your links with trainers or students, and the student codes you made": "Seus vínculos com personal ou alunos, e os convites de aluno que você criou",
+  "Then this device signs out and its data is cleared too: the app starts over, as on its first launch.": "Depois, este aparelho sai da conta e os dados dele também são apagados: o app recomeça como na primeira vez.",
+  "This device stays connected to your own server and keeps that copy.": "Este aparelho continua conectado ao seu próprio servidor e mantém aquela cópia.",
+  "This can’t be undone.": "Não tem volta.",
+  "Enter your current password to confirm.": "Digite sua senha atual para confirmar.",
+  "Delete everything forever": "Apagar para sempre",
+  "Deleting…": "Apagando…",
+  "Account deleted": "Conta apagada",
+  "Wrong password. Try again.": "Senha errada. Tente de novo.",
+  "Sign in to Dayon again, then try once more.": "Entre na Dayon de novo e tente mais uma vez.",
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

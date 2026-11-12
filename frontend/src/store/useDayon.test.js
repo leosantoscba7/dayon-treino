@@ -11,6 +11,7 @@ const cloud = vi.hoisted(() => ({
   sair: vi.fn(async () => {}),
   criarConta: vi.fn(async () => ({ user: { uid: 'u1', email: 'a@b.c', displayName: '' }, perfil: null })),
   entrar: vi.fn(async () => ({ user: { uid: 'u1', email: 'a@b.c', displayName: '' }, perfil: null })),
+  apagarConta: vi.fn(async () => {}),
 }))
 vi.mock('../lib/dayon-cloud.js', () => cloud)
 
@@ -93,5 +94,55 @@ describe('useDayon', () => {
     expect(afterLateRead.user.nome).toBe('Maria Silva')
     expect(afterLateRead.perfil?.nome).toBe('Maria Silva')
     expect(afterLateRead.perfil?.papel).toBe('aluno')
+  })
+
+  describe('deleteAccount', () => {
+    const withData = () => {
+      useStore.getState().replaceState({ ...useStore.getState().S, routines: [{ id: 'r7', name: 'C', items: [] }] }, false)
+      useDayon.setState({ user: { uid: 'u1', email: 'a@b.c' }, perfil: { nome: 'Ana', papel: 'aluno' }, status: 'ok' })
+      localStorage.setItem('dayon_uid', 'u1')
+      localStorage.setItem('dayon_owner', 'u1')
+      localStorage.setItem('dayon_sync_u1', '{"plan":"h"}')
+    }
+    it('deletes in the cloud, signs out and leaves this device as a clean visitor', async () => {
+      withData()
+      expect(localStorage.getItem('gym_state_v1')).toContain('r7')
+      await useDayon.getState().deleteAccount('secret1')
+      expect(cloud.apagarConta).toHaveBeenCalledWith('secret1')
+      expect(cloud.sair).toHaveBeenCalled()
+      expect(useDayon.getState()).toMatchObject({ user: null, perfil: null, status: 'off', choice: false })
+      expect(useStore.getState().S.routines).toEqual([])
+      for (const k of ['gym_state_v1', 'dayon_uid', 'dayon_owner', 'dayon_sync_u1']) expect(localStorage.getItem(k), k).toBeNull()
+    })
+    it('a wrong password keeps the account, the copy and the sync as they were', async () => {
+      withData()
+      cloud.apagarConta.mockRejectedValueOnce(Object.assign(new Error('x'), { code: 'auth/invalid-credential' }))
+      await expect(useDayon.getState().deleteAccount('nope')).rejects.toMatchObject({ code: 'auth/invalid-credential' })
+      expect(cloud.sair).not.toHaveBeenCalled()
+      expect(useDayon.getState().user?.uid).toBe('u1')
+      expect(useStore.getState().S.routines.map(r => r.id)).toEqual(['r7'])
+      expect(localStorage.getItem('dayon_sync_u1')).not.toBeNull()
+      await useDayon.getState().syncNow()
+      expect(cloud.lerNuvem).toHaveBeenCalled()
+    })
+    it('no sync runs while the account is being deleted', async () => {
+      withData()
+      let finish
+      cloud.apagarConta.mockImplementationOnce(() => new Promise(r => { finish = r }))
+      const p = useDayon.getState().deleteAccount('secret1')
+      await vi.waitFor(() => expect(finish).toBeTypeOf('function'))
+      await useDayon.getState().syncNow()
+      expect(cloud.lerNuvem).not.toHaveBeenCalled()
+      finish()
+      await p
+    })
+    it('a device on its own server keeps that server’s copy', async () => {
+      withData()
+      useStore.setState({ user: { id: 'srv', name: 'S' } })
+      await useDayon.getState().deleteAccount('secret1')
+      expect(useDayon.getState().user).toBeNull()
+      expect(useStore.getState().S.routines.map(r => r.id)).toEqual(['r7'])
+      expect(localStorage.getItem('dayon_sync_u1')).toBeNull()
+    })
   })
 })

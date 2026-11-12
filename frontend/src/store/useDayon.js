@@ -7,7 +7,7 @@
 // the server wins and the Dayon sync waits ('paused'): two destinations merging each other's
 // copies would only make it hard to tell where a change went.
 import { create } from 'zustand'
-import { useStore, DEF, hasData } from './useStore.js'
+import { useStore, DEF, hasData, freshState } from './useStore.js'
 import { dayonAvailable, CLOUD_SITE } from '../lib/dayon-config.js'
 import { dayonMessage, isOffline } from '../lib/dayon-errors.js'
 import { syncOnce, owesCloud } from '../lib/dayon-sync.js'
@@ -36,6 +36,7 @@ let running = null
 let again = false
 let applying = false
 let lastRead = 0
+let deleting = false   // the account is being deleted: no sync may write it back meanwhile
 
 // While the store shows a stand-in copy (the tour's practice, or a trainer editing a student's
 // plan: useStore enterTourSandbox), that copy is not this account's and must never be synced into
@@ -165,6 +166,35 @@ export const useDayon = create((set, get) => {
       set({ user: null, perfil: null, status: 'off', choice: false, error: null })
     },
 
+    /*
+     * Settings → Account → Delete account: the Dayon account and all of it in the cloud go
+     * (lib/dayon-cloud.js apagarConta), then this device forgets it: signed out, the account's
+     * state here cleared, and the app's copy on this device started over (localStorage
+     * gym_state_v1 and, on a phone, the file mirror), as a visitor's first launch. A device also
+     * signed in to its own server keeps that server's copy: it is not the Dayon account's.
+     * Throws (and keeps everything as it was, still signed in) when the password is wrong or a
+     * step in the cloud fails; it can be tried again.
+     */
+    async deleteAccount(senha) {
+      if (!get().user?.uid) throw Object.assign(new Error('dayon/signed-out'), { code: 'dayon/signed-out' })
+      deleting = true
+      clearTimeout(debounceTm); clearTimeout(retryTm)
+      try {
+        if (running) await running.catch(() => {})
+        await (await cloudApi()).apagarConta(senha)
+      } catch (e) {
+        deleting = false
+        throw e
+      }
+      // deleteUser signs out by itself; this makes sure, and costs nothing when it already has.
+      try { await (await cloudApi()).sair() } catch { /* already signed out */ }
+      set({ user: null, perfil: null, status: 'off', choice: false, error: null, lastSync: 0 })
+      const keepServerCopy = pausedByServer()
+      if (!keepServerCopy) useStore.getState().replaceState(freshState(), false)
+      get().forgetDevice({ keepState: keepServerCopy })
+      deleting = false
+    },
+
     resolveChoice(merge) {
       if (!merge) return get().signOut()
       set({ choice: false })
@@ -175,7 +205,7 @@ export const useDayon = create((set, get) => {
     // ticked during a workout changes only the running workout, which never goes to the cloud.
     changed() {
       const uid = get().user?.uid
-      if (!uid || get().choice || pausedByServer() || inSandbox()) return
+      if (!uid || get().choice || deleting || pausedByServer() || inSandbox()) return
       clearTimeout(debounceTm)
       debounceTm = setTimeout(() => {
         if (owesCloud(useStore.getState().S, storage(), uid)) get().syncNow()
@@ -184,7 +214,7 @@ export const useDayon = create((set, get) => {
 
     async syncNow() {
       const uid = get().user?.uid
-      if (!uid || get().choice) return
+      if (!uid || get().choice || deleting) return
       if (pausedByServer()) { set({ status: 'paused' }); return }
       if (!useStore.getState().ready) { clearTimeout(retryTm); retryTm = setTimeout(() => get().syncNow(), 1000); return }
       if (inSandbox()) return
@@ -229,8 +259,11 @@ export const useDayon = create((set, get) => {
     },
 
     // The website, signing out on a shared computer: this browser's copy goes too, on request.
-    forgetDevice() {
-      for (const k of ['gym_state_v1', 'gym_sync', 'gym_state_wid', 'gym_state_owner', 'gym_dirty', OWNER_KEY, UID_KEY]) write(k, null)
+    // Also what a deleted account leaves behind (deleteAccount), with `keepState` for a device whose
+    // copy belongs to its own server.
+    forgetDevice({ keepState = false } = {}) {
+      const app = keepState ? [] : ['gym_state_v1', 'gym_sync', 'gym_state_wid', 'gym_state_owner', 'gym_dirty']
+      for (const k of [...app, OWNER_KEY, UID_KEY]) write(k, null)
       try { for (const k of Object.keys(ls() || {})) if (k.startsWith('dayon_sync_')) write(k, null) } catch { /* nothing more to clear */ }
     },
   }

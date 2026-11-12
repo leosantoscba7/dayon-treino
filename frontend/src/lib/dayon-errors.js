@@ -32,3 +32,19 @@ export function dayonMessage(e) {
       return t('Something went wrong. Try again.')
   }
 }
+
+// Deleting the account asks for the password alone: "email or password" would point at the wrong
+// field. The rest reads as everywhere else (no connection, too many tries...).
+export function dayonDeleteMessage(e) {
+  switch (e?.code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/invalid-login-credentials':
+    case 'auth/user-mismatch': return t('Wrong password. Try again.')
+    case 'auth/missing-password': return t('Enter your password.')
+    case 'auth/requires-recent-login':
+    case 'auth/user-token-expired':
+    case 'dayon/signed-out': return t('Sign in to Dayon again, then try once more.')
+    default: return dayonMessage(e)
+  }
+}

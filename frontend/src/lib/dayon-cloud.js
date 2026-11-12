@@ -332,3 +332,50 @@ export async function gravarPlanoAluno(alunoId, json, expectPlan = null) {
     tx.set(ref, { v: DOC_VERSION, json, ts: Date.now(), atualizadoEm: F.serverTimestamp(), por })
   }))
 }
+
+// ---- Deleting the account (Apple 5.1.1(v); docs/dayon/PAINEL.md, "Apagar conta") ------------
+
+const DELETE_PAGE = 500   // Firestore takes up to 500 writes in one batch
+
+/**
+ * Deletes the signed-in Dayon account and everything of it in the cloud, in this order:
+ * reauthenticate with the password (Firebase wants a recent sign-in, and it proves it is the
+ * owner holding the phone); users/{uid}/workouts, plan and estado, page by page; the links where
+ * this person is the student or the trainer; the student codes this person made; users/{uid};
+ * and only then the Auth account. A Firestore step that fails stops there and throws, with the
+ * Auth account still in place, so "Delete" can simply be tried again: what was already deleted
+ * is not there to find the second time. convitesPersonal is left alone (the rules let only Léo
+ * delete it, in the Console); a used one only names the uid.
+ */
+export async function apagarConta(senha) {
+  if (!senha) throw fail('auth/missing-password')
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) throw fail('dayon/offline')
+  const { auth, db, A, F } = await sdk()
+  const user = auth.currentUser
+  if (!user || !user.email) throw fail('dayon/signed-out')
+  await timed(A.reauthenticateWithCredential(user, A.EmailAuthProvider.credential(user.email, senha)))
+  const uid = user.uid
+  const deleteAll = async refs => {
+    for (let i = 0; i < refs.length; i += DELETE_PAGE) {
+      const b = F.writeBatch(db)
+      for (const r of refs.slice(i, i + DELETE_PAGE)) b.delete(r)
+      await timed(b.commit())
+    }
+  }
+  // A page at a time: a deleted document no longer matches, so the same query reads the next page.
+  const drain = async q => {
+    for (;;) {
+      const s = await timed(F.getDocs(F.query(q, F.limit(DELETE_PAGE))))
+      if (!s.docs.length) return
+      await deleteAll(s.docs.map(d => d.ref))
+      if (s.docs.length < DELETE_PAGE) return
+    }
+  }
+  for (const sub of ['workouts', 'plan', 'estado']) await drain(F.collection(db, 'users', uid, sub))
+  const vinculos = F.collection(db, 'vinculos')
+  await drain(F.query(vinculos, F.where('alunoId', '==', uid)))
+  await drain(F.query(vinculos, F.where('personalId', '==', uid)))
+  await drain(F.query(F.collection(db, 'convitesAluno'), F.where('personalId', '==', uid)))
+  await timed(F.deleteDoc(F.doc(db, 'users', uid)))
+  await timed(A.deleteUser(user))
+}

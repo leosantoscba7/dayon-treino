@@ -1,5 +1,5 @@
 // DAYON - Treino: "Sign in to Dayon" (email and password) and the Dayon account once signed in:
-// how the sync stands, Sync now, trainer and student codes, Sign out (store/useDayon.js,
+// how the sync stands, Sync now, trainer and student codes, Sign out, Delete account (store/useDayon.js,
 // docs/dayon/PAINEL.md). Opened from the first-launch screen, from Settings → Account, and on
 // the website as the screen in front of the app (DayonGate).
 import { useEffect, useState } from 'react'
@@ -8,7 +8,7 @@ import { useUI } from '../store/useUI.js'
 import { t } from '../lib/i18n.js'
 import { Button, Segmented, Row, Section } from './ui.jsx'
 import DayonLogo from './DayonLogo.jsx'
-import { dayonMessage } from '../lib/dayon-errors.js'
+import { dayonMessage, dayonDeleteMessage } from '../lib/dayon-errors.js'
 import { CLOUD_SITE } from '../lib/dayon-config.js'
 import { copyText } from '../lib/clipboard.js'
 import { nav } from '../lib/nav.js'
@@ -208,8 +208,60 @@ export function DayonSignedIn({ close }) {
         <CodeField placeholder={t('Trainer code')} button={t('Use')} onSubmit={becomeTrainer} exact />
       </Section>
     </> : null}
+    <Section footer={t('Deletes your Dayon account and everything of it in the cloud. It can’t be undone.')}>
+      <Row icon="trash" iconTint="var(--red)" title={t('Delete account')} danger onClick={() => openDeleteAccount({ onDeleted: close })} />
+    </Section>
   </>
 }
+
+/*
+ * Delete account (Apple 5.1.1(v)): what goes, that it does not come back, the current password
+ * (Firebase reauthenticates with it) and a last, explicit "Delete everything forever". A wrong
+ * password or a failed step keeps the account as it was and says why; it can be tried again.
+ */
+export function DeleteAccountSheet({ close, onDeleted }) {
+  const paused = useDayon(s => s.status === 'paused')
+  const [senha, setSenha] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const go = async () => {
+    if (busy || !senha) return
+    setBusy(true)
+    setError('')
+    try { await useDayon.getState().deleteAccount(senha) }
+    catch (e) { setError(dayonDeleteMessage(e)); setBusy(false); return }
+    close?.()
+    onDeleted?.()
+    toast(t('Account deleted'))
+  }
+  const li = { marginTop: 4 }
+  return <div className="kb-lift">
+    <h3>{t('Delete your Dayon account?')}</h3>
+    <div className="muted small" style={{ lineHeight: 1.5 }}>
+      <div>{t('This deletes for good, right away:')}</div>
+      <ul style={{ margin: '6px 0 10px', paddingLeft: 20 }}>
+        <li style={li}>{t('Your Dayon account and profile')}</li>
+        <li style={li}>{t('Your plan, workouts and settings saved in the cloud')}</li>
+        <li style={li}>{t('Your links with trainers or students, and the student codes you made')}</li>
+      </ul>
+      <div>{paused ? t('This device stays connected to your own server and keeps that copy.')
+        : t('Then this device signs out and its data is cleared too: the app starts over, as on its first launch.')}</div>
+      <div style={{ marginTop: 8, color: 'var(--red)', fontWeight: 600 }}>{t('This can’t be undone.')}</div>
+    </div>
+    <form onSubmit={e => { e.preventDefault(); go() }}>
+      <div className="dim small" style={{ marginTop: 14 }}>{t('Enter your current password to confirm.')}</div>
+      <input className="input" style={{ marginTop: 6 }} type="password" placeholder={t('Current password')} aria-label={t('Current password')}
+        value={senha} onChange={e => { setSenha(e.target.value); setError('') }} autoComplete="current-password" disabled={busy} />
+      {error && <div className="small" role="alert" style={{ color: 'var(--red)', marginTop: 8, lineHeight: 1.45 }}>{error}</div>}
+      <div style={{ height: 12 }} />
+      <button className="btn danger" type="submit" disabled={busy || !senha}>{busy ? t('Deleting…') : t('Delete everything forever')}</button>
+      <div style={{ height: 8 }} />
+      <Button variant="ghost" className="dim" type="button" onClick={() => close?.()} disabled={busy}>{t('Cancel')}</Button>
+    </form>
+  </div>
+}
+
+export const openDeleteAccount = opts => useUI.getState().openSheet(close => <DeleteAccountSheet close={close} {...opts} />)
 
 /** The sheet: the form while signed out, the account once signed in. */
 export function DayonAccountSheet({ close, onSignedIn }) {

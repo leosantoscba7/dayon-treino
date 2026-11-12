@@ -141,7 +141,7 @@ pergunta: **Juntar** com esta conta ou **Sair**. Ele nunca mistura sem perguntar
 
 | | Aluno (dono) | Personal com vínculo `ativo` | Qualquer outra pessoa |
 |---|---|---|---|
-| Perfil `users/{uid}` | lê; muda o nome | lê (nome, e-mail) | nada |
+| Perfil `users/{uid}` | lê; muda o nome; apaga (Apagar conta) | lê (nome, e-mail) | nada |
 | Plano `plan/atual` | lê e escreve | **lê e escreve** | nada |
 | Histórico `workouts/*` | lê e escreve | **só lê** | nada |
 | Resto `estado/atual` | lê e escreve | nada | nada |
@@ -156,6 +156,34 @@ pergunta: **Juntar** com esta conta ou **Sair**. Ele nunca mistura sem perguntar
 - O personal **não escreve** o histórico nem o perfil do aluno e não lê o `estado` (pesagens etc.).
 - Por que o personal pode ler o perfil do aluno: só para mostrar o nome dele no painel.
   O aluno também lê o perfil do personal com quem tem vínculo ativo (para ver o nome).
+
+### Apagar conta (Apple 5.1.1(v))
+
+Em **Ajustes > Conta > Apagar conta** (app e site), com a conta Dayon aberta. A folha explica o
+que vai embora, pede a **senha atual** e só apaga no botão final "Apagar para sempre".
+
+`apagarConta(senha)` em `lib/dayon-cloud.js`, nesta ordem:
+
+1. reautentica (`EmailAuthProvider.credential` + `reauthenticateWithCredential`); senha errada
+   para aqui, sem apagar nada;
+2. `users/{uid}/workouts/*`, `plan/*` e `estado/*`, em páginas e lotes de até 500;
+3. `vinculos` onde `alunoId == uid` e onde `personalId == uid`;
+4. `convitesAluno` onde `personalId == uid` (usados ou não);
+5. `users/{uid}`;
+6. por último, `deleteUser` no Firebase Auth.
+
+Se um passo do Firestore falhar, a conta do Auth fica e o app mostra o erro: dá para tentar de
+novo, e o que já foi apagado simplesmente não aparece mais. `convitesPersonal` **não** é apagado
+(só você apaga, no Console; um código usado guarda só o uid). Depois (`useDayon.deleteAccount`):
+sai da conta, limpa o estado da conta Dayon e a cópia do app no aparelho (`gym_state_v1`, o
+arquivo espelho no celular, `dayon_uid`, `dayon_owner`, `dayon_sync_*`) e mostra "Conta apagada";
+o app volta como na primeira abertura. Um aparelho também ligado a um servidor próprio mantém a
+cópia desse servidor (não é da conta Dayon). Nenhuma sincronização roda durante a exclusão.
+
+Regras: `users/{uid}` delete só se `isSelf(uid)`; `vinculos` delete só pelo aluno ou pelo personal
+do vínculo; `convitesAluno` delete já era do personal dono. Testes em `firestore-tests/`
+(`describe('apagar a conta')`) e no front: `lib/dayon-cloud-delete.test.js`,
+`store/useDayon.test.js`, `components/DayonDeleteAccount.test.jsx`.
 
 ---
 
@@ -361,6 +389,11 @@ Etapa 4 (código-fonte público e link AGPL):
 11. Publicar o snapshot limpo em github.com/leosantoscba7/dayon-treino, com o link
     "Código-fonte · Licença AGPL-3.0" em letra miúda no Início (site) e em Ajustes → Sobre,
     o botão Concluir na busca de exercícios, e estas notas.
+
+Exclusão de conta:
+
+12. Adicionar "Apagar conta" na conta Dayon (Ajustes > Conta), as regras de exclusão, os testes,
+    a política de privacidade e estas notas.
 
 A branch `painel-web` continua só neste computador; `master` não foi alterada. O repositório
 público no GitHub é um snapshot à parte (um commit, sem o histórico local e sem a mídia dos
